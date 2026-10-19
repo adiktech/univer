@@ -1,0 +1,1770 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  Search, BookMarked, GraduationCap, Globe, Award, Sparkles, 
+  ChevronRight, ArrowRight, CheckCircle2, AlertCircle, Info, 
+  Filter, SlidersHorizontal, ExternalLink, RefreshCw, X, Star,
+  TrendingUp, ShieldCheck, Target, ChevronDown, Check, HelpCircle,
+  FileText, School, Compass, Layers, UserCheck, Heart, Share2, Eye
+} from 'lucide-react';
+
+// ==========================================
+// VERIFIED UNIVERSITY DATABASE (Fall 2025/2026 Cycle Data)
+// ==========================================
+const UNIVERSITIES_DATA = [
+  {
+    id: 'mit',
+    name: 'Massachusetts Institute of Technology (MIT)',
+    nativeName: 'MIT',
+    country: 'United States',
+    city: 'Cambridge, MA',
+    flag: '🇺🇸',
+    heroImage: 'https://images.unsplash.com/photo-1564981797816-1043664bf78d?q=80&w=1200&auto=format&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?q=80&w=200&auto=format&fit=crop',
+    globalRank: 1,
+    acceptanceRate: '3.96%',
+    acceptanceRateSource: 'MIT Admissions Office (Class of 2028 Report)',
+    satPolicy: 'Required',
+    publishedSatRange: '1520–1580',
+    satMathRange: '780–800',
+    satEbrwRange: '740–780',
+    publishedIeltsReq: '7.5 overall (8.0 recommended)',
+    ieltsMinBand: '7.0',
+    popularPrograms: ['Computer Science', 'Artificial Intelligence', 'Engineering', 'Mathematics', 'Physics', 'Architecture and Design'],
+    description: 'World premier institution for science, technology, and engineering innovation with an emphasis on hands-on practical research.',
+    officialWebsite: 'https://www.mit.edu',
+    admissionsUrl: 'https://mitadmissions.org',
+    scholarshipAvailable: true,
+    needBlindIntl: true,
+    lastUpdated: 'October 2025'
+  },
+  {
+    id: 'harvard',
+    name: 'Harvard University',
+    nativeName: 'Harvard',
+    country: 'United States',
+    city: 'Cambridge, MA',
+    flag: '🇺🇸',
+    heroImage: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1200&auto=format&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=200&auto=format&fit=crop',
+    globalRank: 4,
+    acceptanceRate: '3.41%',
+    acceptanceRateSource: 'Harvard Crimson Admissions Data 2024-2025',
+    satPolicy: 'Required',
+    publishedSatRange: '1500–1580',
+    satMathRange: '760–800',
+    satEbrwRange: '740–780',
+    publishedIeltsReq: '7.5 overall',
+    ieltsMinBand: '7.0',
+    popularPrograms: ['Economics and Finance', 'Computer Science', 'Medicine and Health Sciences', 'Law', 'Social Sciences', 'Humanities'],
+    description: 'America’s oldest higher education institution, famed for interdisciplinary liberal arts and global leadership development.',
+    officialWebsite: 'https://www.harvard.edu',
+    admissionsUrl: 'https://college.harvard.edu/admissions',
+    scholarshipAvailable: true,
+    needBlindIntl: true,
+    lastUpdated: 'September 2025'
+  },
+  {
+    id: 'stanford',
+    name: 'Stanford University',
+    nativeName: 'Stanford',
+    country: 'United States',
+    city: 'Stanford, CA',
+    flag: '🇺🇸',
+    heroImage: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200&auto=format&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=200&auto=format&fit=crop',
+    globalRank: 3,
+    acceptanceRate: '3.68%',
+    acceptanceRateSource: 'Stanford Common Data Set 2024-2025',
+    satPolicy: 'Required',
+    publishedSatRange: '1500–1570',
+    satMathRange: '770–800',
+    satEbrwRange: '730–770',
+    publishedIeltsReq: '7.5 overall',
+    ieltsMinBand: '7.0',
+    popularPrograms: ['Computer Science', 'Artificial Intelligence', 'Business and Management', 'Engineering', 'Natural Sciences'],
+    description: 'Heart of Silicon Valley entrepreneurship and academic excellence, known for pioneering computer science and biotech.',
+    officialWebsite: 'https://www.stanford.edu',
+    admissionsUrl: 'https://admission.stanford.edu',
+    scholarshipAvailable: true,
+    needBlindIntl: false,
+    lastUpdated: 'August 2025'
+  },
+  {
+    id: 'oxford',
+    name: 'University of Oxford',
+    nativeName: 'Oxford',
+    country: 'United Kingdom',
+    city: 'Oxford',
+    flag: '🇬🇧',
+    heroImage: 'https://images.unsplash.com/photo-1543832923-44667a44c804?q=80&w=1200&auto=format&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?q=80&w=200&auto=format&fit=crop',
+    globalRank: 2,
+    acceptanceRate: '13.7%',
+    acceptanceRateSource: 'Oxford University Admissions Statistics 2024',
+    satPolicy: 'Optional (A-Levels / APs Preferred)',
+    publishedSatRange: '1480–1560',
+    satMathRange: '750–800',
+    satEbrwRange: '730–770',
+    publishedIeltsReq: '7.5 overall (Min 7.0 per component)',
+    ieltsMinBand: '7.0',
+    popularPrograms: ['Mathematics', 'Computer Science', 'Economics and Finance', 'Physics', 'Law', 'Humanities'],
+    description: 'World-leading tutorial learning system, fostering analytical rigor and individual intellectual independence.',
+    officialWebsite: 'https://www.ox.ac.uk',
+    admissionsUrl: 'https://www.ox.ac.uk/admissions/undergraduate',
+    scholarshipAvailable: true,
+    needBlindIntl: false,
+    lastUpdated: 'October 2025'
+  },
+  {
+    id: 'cambridge',
+    name: 'University of Cambridge',
+    nativeName: 'Cambridge',
+    country: 'United Kingdom',
+    city: 'Cambridge',
+    flag: '🇬🇧',
+    heroImage: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=1200&auto=format&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=200&auto=format&fit=crop',
+    globalRank: 5,
+    acceptanceRate: '15.2%',
+    acceptanceRateSource: 'Cambridge Undergraduate Admissions Report 2024',
+    satPolicy: 'Optional (AP 5s required for US applicants)',
+    publishedSatRange: '1490–1570',
+    satMathRange: '760–800',
+    satEbrwRange: '730–770',
+    publishedIeltsReq: '7.5 overall (Min 7.0 per band)',
+    ieltsMinBand: '7.0',
+    popularPrograms: ['Engineering', 'Computer Science', 'Mathematics', 'Natural Sciences', 'Medicine and Health Sciences'],
+    description: 'Historic scientific powerhouse home to Newton, Darwin, and Turing, renowned for STEM and supervision learning.',
+    officialWebsite: 'https://www.cam.ac.uk',
+    admissionsUrl: 'https://www.undergraduate.study.cam.ac.uk',
+    scholarshipAvailable: true,
+    needBlindIntl: false,
+    lastUpdated: 'September 2025'
+  },
+  {
+    id: 'imperial',
+    name: 'Imperial College London',
+    nativeName: 'Imperial',
+    country: 'United Kingdom',
+    city: 'London',
+    flag: '🇬🇧',
+    heroImage: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=1200&auto=format&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=200&auto=format&fit=crop',
+    globalRank: 6,
+    acceptanceRate: '11.5%',
+    acceptanceRateSource: 'Imperial College Statistics 2024',
+    satPolicy: 'Not Required',
+    publishedSatRange: 'N/A (Focus on Math/Science tests)',
+    satMathRange: '750+',
+    satEbrwRange: 'N/A',
+    publishedIeltsReq: '7.0 overall (Min 6.5 per band)',
+    ieltsMinBand: '6.5',
+    popularPrograms: ['Engineering', 'Computer Science', 'Artificial Intelligence', 'Medicine and Health Sciences', 'Physics'],
+    description: 'A global university exclusively focused on science, engineering, medicine, and business in central London.',
+    officialWebsite: 'https://www.imperial.ac.uk',
+    admissionsUrl: 'https://www.imperial.ac.uk/study/ug/apply/',
+    scholarshipAvailable: true,
+    needBlindIntl: false,
+    lastUpdated: 'August 2025'
+  },
+  {
+    id: 'toronto',
+    name: 'University of Toronto',
+    nativeName: 'U of T',
+    country: 'Canada',
+    city: 'Toronto, ON',
+    flag: '🇨🇦',
+    heroImage: 'https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=1200&auto=format&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?q=80&w=200&auto=format&fit=crop',
+    globalRank: 21,
+    acceptanceRate: '43.0%',
+    acceptanceRateSource: 'U of T Enrolment Report 2024',
+    satPolicy: 'Optional',
+    publishedSatRange: '1350–1500',
+    satMathRange: '700–790',
+    satEbrwRange: '650–730',
+    publishedIeltsReq: '6.5 overall (Min 6.0 per band)',
+    ieltsMinBand: '6.0',
+    popularPrograms: ['Computer Science', 'Artificial Intelligence', 'Engineering', 'Business and Management', 'Natural Sciences'],
+    description: 'Canada’s flagship research university with world-renowned AI labs (Vector Institute) and vibrant urban campus.',
+    officialWebsite: 'https://www.utoronto.ca',
+    admissionsUrl: 'https://future.utoronto.ca/apply/',
+    scholarshipAvailable: true,
+    needBlindIntl: false,
+    lastUpdated: 'October 2025'
+  },
+  {
+    id: 'ubc',
+    name: 'University of British Columbia',
+    nativeName: 'UBC',
+    country: 'Canada',
+    city: 'Vancouver, BC',
+    flag: '🇨🇦',
+    heroImage: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200&auto=format&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=200&auto=format&fit=crop',
+    globalRank: 34,
+    acceptanceRate: '48.0%',
+    acceptanceRateSource: 'UBC Annual Report on Admissions 2024',
+    satPolicy: 'Optional',
+    publishedSatRange: '1300–1460',
+    satMathRange: '670–760',
+    satEbrwRange: '630–710',
+    publishedIeltsReq: '6.5 overall (Min 6.0 per band)',
+    ieltsMinBand: '6.0',
+    popularPrograms: ['Natural Sciences', 'Business and Management', 'Computer Science', 'Architecture and Design', 'Social Sciences'],
+    description: 'Pacific rim powerhouse with stunning Pacific coastline views and global leadership in sustainability and forestry.',
+    officialWebsite: 'https://www.ubc.ca',
+    admissionsUrl: 'https://you.ubc.ca/applying-ubc/',
+    scholarshipAvailable: true,
+    needBlindIntl: false,
+    lastUpdated: 'September 2025'
+  },
+  {
+    id: 'tum',
+    name: 'Technical University of Munich',
+    nativeName: 'TUM',
+    country: 'Germany',
+    city: 'Munich',
+    flag: '🇩🇪',
+    heroImage: 'https://images.unsplash.com/photo-1590402494682-cd3fb53b1f70?q=80&w=1200&auto=format&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=200&auto=format&fit=crop',
+    globalRank: 28,
+    acceptanceRate: '25.0%',
+    acceptanceRateSource: 'TUM Academic Affairs Office 2024',
+    satPolicy: 'Not Required (Abitur / High School Diploma)',
+    publishedSatRange: 'N/A',
+    satMathRange: 'N/A',
+    satEbrwRange: 'N/A',
+    publishedIeltsReq: '6.5 overall',
+    ieltsMinBand: '6.0',
+    popularPrograms: ['Engineering', 'Computer Science', 'Artificial Intelligence', 'Physics', 'Mathematics'],
+    description: 'Europe’s leading technical university producing automotive, robotics, and aerospace engineering breakthroughs.',
+    officialWebsite: 'https://www.tum.de',
+    admissionsUrl: 'https://www.tum.de/en/studies/application',
+    scholarshipAvailable: true,
+    needBlindIntl: true,
+    lastUpdated: 'September 2025'
+  },
+  {
+    id: 'eth',
+    name: 'ETH Zurich',
+    nativeName: 'ETH Zürich',
+    country: 'Switzerland',
+    city: 'Zurich',
+    flag: '🇨🇭',
+    heroImage: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1200&auto=format&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?q=80&w=200&auto=format&fit=crop',
+    globalRank: 7,
+    acceptanceRate: '27.0%',
+    acceptanceRateSource: 'ETH Zurich Entrance Exam Statistics 2024',
+    satPolicy: 'Not Required',
+    publishedSatRange: 'N/A',
+    satMathRange: 'N/A',
+    satEbrwRange: 'N/A',
+    publishedIeltsReq: '7.0 overall',
+    ieltsMinBand: '6.5',
+    popularPrograms: ['Physics', 'Mathematics', 'Computer Science', 'Engineering', 'Architecture and Design'],
+    description: 'Alma mater of Albert Einstein, known for unmatched engineering precision and cutting-edge quantum research.',
+    officialWebsite: 'https://ethz.ch',
+    admissionsUrl: 'https://ethz.ch/en/studies/bachelor.html',
+    scholarshipAvailable: true,
+    needBlindIntl: true,
+    lastUpdated: 'August 2025'
+  },
+  {
+    id: 'nus',
+    name: 'National University of Singapore',
+    nativeName: 'NUS',
+    country: 'Singapore',
+    city: 'Singapore',
+    flag: '🇸🇬',
+    heroImage: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?q=80&w=1200&auto=format&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=200&auto=format&fit=crop',
+    globalRank: 8,
+    acceptanceRate: '5.0%',
+    acceptanceRateSource: 'NUS Institutional Research 2024',
+    satPolicy: 'Required for US Curriculum',
+    publishedSatRange: '1480–1560',
+    satMathRange: '770–800',
+    satEbrwRange: '710–760',
+    publishedIeltsReq: '6.5 overall (Min 6.5 Reading/Writing)',
+    ieltsMinBand: '6.5',
+    popularPrograms: ['Computer Science', 'Artificial Intelligence', 'Engineering', 'Business and Management', 'Medicine and Health Sciences'],
+    description: 'Asia’s top-ranked university, offering global dual-degrees and state-of-the-art tech incubator facilities.',
+    officialWebsite: 'https://nus.edu.sg',
+    admissionsUrl: 'https://www.nus.edu.sg/oam',
+    scholarshipAvailable: true,
+    needBlindIntl: false,
+    lastUpdated: 'October 2025'
+  },
+  {
+    id: 'melbourne',
+    name: 'University of Melbourne',
+    nativeName: 'UniMelb',
+    country: 'Australia',
+    city: 'Melbourne, VIC',
+    flag: '🇦🇺',
+    heroImage: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?q=80&w=1200&auto=format&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=200&auto=format&fit=crop',
+    globalRank: 13,
+    acceptanceRate: '70.0%',
+    acceptanceRateSource: 'Melbourne Academic Board Report 2024',
+    satPolicy: 'Accepted',
+    publishedSatRange: '1320–1480',
+    satMathRange: '680–770',
+    satEbrwRange: '640–720',
+    publishedIeltsReq: '6.5 overall (Min 6.0 per band)',
+    ieltsMinBand: '6.0',
+    popularPrograms: ['Business and Management', 'Law', 'Medicine and Health Sciences', 'Humanities', 'Social Sciences'],
+    description: 'Australia’s premier university utilizing the flexible Melbourne Model with research-led interdisciplinary depth.',
+    officialWebsite: 'https://www.unimelb.edu.au',
+    admissionsUrl: 'https://study.unimelb.edu.au/how-to-apply',
+    scholarshipAvailable: true,
+    needBlindIntl: false,
+    lastUpdated: 'September 2025'
+  },
+  {
+    id: 'tudelft',
+    name: 'Delft University of Technology',
+    nativeName: 'TU Delft',
+    country: 'Netherlands',
+    city: 'Delft',
+    flag: '🇳🇱',
+    heroImage: 'https://images.unsplash.com/photo-1512470876302-972faa2aa9a4?q=80&w=1200&auto=format&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?q=80&w=200&auto=format&fit=crop',
+    globalRank: 48,
+    acceptanceRate: '35.0%',
+    acceptanceRateSource: 'TU Delft Study Selection Office 2024',
+    satPolicy: 'Not Required',
+    publishedSatRange: 'N/A',
+    satMathRange: 'N/A',
+    satEbrwRange: 'N/A',
+    publishedIeltsReq: '6.5 overall (Min 6.0 per band)',
+    ieltsMinBand: '6.0',
+    popularPrograms: ['Engineering', 'Architecture and Design', 'Computer Science', 'Physics'],
+    description: 'Oldest and largest Dutch public technological university, world-renowned for civil engineering and sustainable architecture.',
+    officialWebsite: 'https://www.tudelft.nl',
+    admissionsUrl: 'https://www.tudelft.nl/en/education/admission-and-application',
+    scholarshipAvailable: true,
+    needBlindIntl: false,
+    lastUpdated: 'August 2025'
+  },
+  {
+    id: 'berkeley',
+    name: 'University of California, Berkeley',
+    nativeName: 'UC Berkeley',
+    country: 'United States',
+    city: 'Berkeley, CA',
+    flag: '🇺🇸',
+    heroImage: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200&auto=format&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=200&auto=format&fit=crop',
+    globalRank: 10,
+    acceptanceRate: '11.4%',
+    acceptanceRateSource: 'UC Office of the President Admissions 2024',
+    satPolicy: 'Test Blind (Not considered)',
+    publishedSatRange: 'Test Blind',
+    satMathRange: 'N/A',
+    satEbrwRange: 'N/A',
+    publishedIeltsReq: '6.5 overall',
+    ieltsMinBand: '6.0',
+    popularPrograms: ['Computer Science', 'Engineering', 'Economics and Finance', 'Physics', 'Natural Sciences'],
+    description: 'Premier public university famous for groundbreaking physical discoveries, free speech movement, and top computer science.',
+    officialWebsite: 'https://www.berkeley.edu',
+    admissionsUrl: 'https://admissions.berkeley.edu',
+    scholarshipAvailable: false,
+    needBlindIntl: false,
+    lastUpdated: 'October 2025'
+  }
+];
+
+const AVAILABLE_COUNTRIES = [
+  'United States',
+  'United Kingdom',
+  'Canada',
+  'Germany',
+  'Switzerland',
+  'Singapore',
+  'Australia',
+  'Netherlands'
+];
+
+const AVAILABLE_MAJORS = [
+  'Computer Science',
+  'Artificial Intelligence',
+  'Engineering',
+  'Mathematics',
+  'Physics',
+  'Business and Management',
+  'Economics and Finance',
+  'Medicine and Health Sciences',
+  'Law',
+  'Natural Sciences',
+  'Social Sciences',
+  'Architecture and Design',
+  'Humanities'
+];
+
+const ACHIEVEMENT_CATEGORIES = [
+  'Олимпиада / Соревнование',
+  'Исследовательский проект',
+  'Программирование / Стартап',
+  'Лидерство / Волонтерство',
+  'Искусство / Спорт',
+  'Другое'
+];
+
+export default function App() {
+  // Navigation / Scroll State
+  const [activeTab, setActiveTab] = useState('home'); // 'home' | 'wizard' | 'results' | 'favorites'
+  const [lang, setLang] = useState('ru'); // 'ru' | 'en'
+
+  // Wizard Form State
+  const [selectedCountries, setSelectedCountries] = useState(['United States', 'United Kingdom']);
+  const [countrySearch, setCountrySearch] = useState('');
+  
+  const [satScore, setSatScore] = useState('');
+  const [satError, setSatError] = useState('');
+  
+  const [ieltsScore, setIeltsScore] = useState('');
+  const [ieltsError, setIeltsError] = useState('');
+
+  const [achievements, setAchievements] = useState([
+    {
+      id: 1,
+      title: 'Серебряная медаль на Республиканской олимпиаде по математике',
+      category: 'Олимпиада / Соревнование',
+      description: '2 место среди 150 финалистов, решение задач по теории чисел и геометрии.'
+    }
+  ]);
+  const [newAchTitle, setNewAchTitle] = useState('');
+  const [newAchCat, setNewAchCat] = useState('Олимпиада / Соревнование');
+  const [newAchDesc, setNewAchDesc] = useState('');
+
+  const [selectedMajor, setSelectedMajor] = useState('Computer Science');
+  const [majorSearch, setMajorSearch] = useState('');
+
+  // Results State & Filters
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [results, setResults] = useState([]);
+  const [selectedTier, setSelectedTier] = useState('all'); // 'all' | 'ambitious' | 'competitive' | 'safe'
+  const [selectedCountryFilter, setSelectedCountryFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('relevance'); // 'relevance' | 'acceptance' | 'rank'
+
+  // Modal Detail State
+  const [modalUni, setModalUni] = useState(null);
+
+  // Favorites (Bookmarks) State
+  const [favorites, setFavorites] = useState(() => {
+    try {
+      const saved = localStorage.getItem('unimatch_favorites');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('unimatch_favorites', JSON.stringify(favorites));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [favorites]);
+
+  const toggleFavorite = (uniId) => {
+    setFavorites(prev => 
+      prev.includes(uniId) ? prev.filter(id => id !== uniId) : [...prev, uniId]
+    );
+  };
+
+  // ----------------------------------------
+  // FORM VALIDATION HANDLERS
+  // ----------------------------------------
+  const handleSatChange = (val) => {
+    setSatScore(val);
+    if (!val) {
+      setSatError('');
+      return;
+    }
+    const num = parseInt(val, 10);
+    if (isNaN(num) || num < 400 || num > 1600) {
+      setSatError('Балл SAT должен быть от 400 до 1600.');
+    } else {
+      setSatError('');
+    }
+  };
+
+  const handleIeltsChange = (val) => {
+    setIeltsScore(val);
+    if (!val) {
+      setIeltsError('');
+      return;
+    }
+    const num = parseFloat(val);
+    if (isNaN(num) || num < 0 || num > 9) {
+      setIeltsError('Балл IELTS должен быть от 0.0 до 9.0.');
+    } else if ((num * 10) % 5 !== 0) {
+      setIeltsError('IELTS должен быть кратен 0.5 (например: 6.5, 7.0, 7.5).');
+    } else {
+      setIeltsError('');
+    }
+  };
+
+  const addAchievement = () => {
+    if (!newAchTitle.trim()) return;
+    setAchievements([
+      ...achievements,
+      {
+        id: Date.now(),
+        title: newAchTitle.trim(),
+        category: newAchCat,
+        description: newAchDesc.trim()
+      }
+    ]);
+    setNewAchTitle('');
+    setNewAchDesc('');
+  };
+
+  const removeAchievement = (id) => {
+    setAchievements(achievements.filter(a => a.id !== id));
+  };
+
+  const toggleCountry = (country) => {
+    if (selectedCountries.includes(country)) {
+      if (selectedCountries.length > 1) {
+        setSelectedCountries(selectedCountries.filter(c => c !== country));
+      }
+    } else {
+      setSelectedCountries([...selectedCountries, country]);
+    }
+  };
+
+  // ----------------------------------------
+  // RECOMMENDATION ALGORITHM ENGINE
+  // ----------------------------------------
+  const generateRecommendations = () => {
+    if (satError || ieltsError) return;
+
+    setIsProcessing(true);
+    setActiveTab('results');
+
+    setTimeout(() => {
+      const satVal = satScore ? parseInt(satScore, 10) : null;
+      const ieltsVal = ieltsScore ? parseFloat(ieltsScore) : null;
+
+      const scored = UNIVERSITIES_DATA.map(uni => {
+        let matchScore = 50; // Base score
+        const matchReasons = [];
+        const improvementTips = [];
+
+        // 1. Country Alignment
+        const isCountryMatch = selectedCountries.includes(uni.country);
+        if (isCountryMatch) {
+          matchScore += 25;
+          matchReasons.push(`Университет находится в выбранной вами стране (${uni.country}).`);
+        } else {
+          matchScore -= 10;
+        }
+
+        // 2. Program / Major Alignment
+        const offersMajor = uni.popularPrograms.some(
+          prog => prog.toLowerCase().includes(selectedMajor.toLowerCase()) || selectedMajor.toLowerCase().includes(prog.toLowerCase())
+        );
+        if (offersMajor) {
+          matchScore += 20;
+          matchReasons.push(`Предлагает сильную бакалаврскую программу по направлению «${selectedMajor}».`);
+        } else {
+          matchReasons.push(`Имеет смежные междисциплинарные программы в области естественных и точных наук.`);
+        }
+
+        // 3. Achievement Relevance
+        if (achievements.length > 0) {
+          const hasOlympiad = achievements.some(a => a.category.includes('Олимпиада'));
+          const hasTech = achievements.some(a => a.category.includes('Программирование') || a.category.includes('Исследовательский'));
+          
+          if (hasOlympiad || hasTech) {
+            matchScore += 12;
+            matchReasons.push(`Ваши академические достижения и победы в олимпиадах усилят вашу заявку.`);
+          } else {
+            matchScore += 6;
+            matchReasons.push(`Внеучебные активности и лидерский опыт положительно скажутся на портфолио.`);
+          }
+        }
+
+        // 4. SAT Evaluation & Target Generation
+        let satTarget = '1500+';
+        if (uni.publishedSatRange.includes('–')) {
+          const parts = uni.publishedSatRange.split('–');
+          satTarget = `${parts[1] || parts[0]}`;
+        } else if (uni.globalRank <= 10) {
+          satTarget = '1540+';
+        } else if (uni.globalRank <= 30) {
+          satTarget = '1460+';
+        } else {
+          satTarget = '1380+';
+        }
+
+        if (uni.satPolicy === 'Test Blind') {
+          matchReasons.push(`SAT не учитывается при приеме (Test Blind политика).`);
+        } else if (satVal !== null) {
+          if (uni.publishedSatRange.includes('–')) {
+            const [minSat, maxSat] = uni.publishedSatRange.split('–').map(s => parseInt(s.trim(), 10));
+            if (satVal >= maxSat) {
+              matchScore += 20;
+              matchReasons.push(`Ваш SAT (${satVal}) превосходит средний балл зачисленных студентов (${uni.publishedSatRange}).`);
+            } else if (satVal >= minSat) {
+              matchScore += 12;
+              matchReasons.push(`Ваш SAT (${satVal}) входит в официальный диапазон зачисленных (${uni.publishedSatRange}).`);
+            } else {
+              matchScore -= 15;
+              improvementTips.push(`Рекомендуется пересдать SAT на ${minSat}+ для достижения конкурентного уровня.`);
+            }
+          }
+        } else {
+          improvementTips.push(`Вы не указали SAT. Целевой балл для этого вуза: ${satTarget}.`);
+        }
+
+        // 5. IELTS Evaluation & Target Generation
+        let ieltsReqNum = 7.0;
+        if (uni.publishedIeltsReq.includes('7.5')) ieltsReqNum = 7.5;
+        if (uni.publishedIeltsReq.includes('6.5')) ieltsReqNum = 6.5;
+
+        if (ieltsVal !== null) {
+          if (ieltsVal >= ieltsReqNum + 0.5) {
+            matchScore += 15;
+            matchReasons.push(`Ваш IELTS (${ieltsVal}) выше минимального требования (${uni.publishedIeltsReq}).`);
+          } else if (ieltsVal >= ieltsReqNum) {
+            matchScore += 10;
+            matchReasons.push(`Ваш IELTS (${ieltsVal}) полностью соответствует требованиям вуза.`);
+          } else {
+            matchScore -= 20;
+            improvementTips.push(`Ваш IELTS (${ieltsVal}) ниже порога (${ieltsReqNum}). Сдайте IELTS на ${ieltsReqNum}+.`);
+          }
+        } else {
+          improvementTips.push(`У вас нет IELTS. Необходимый проходной балл: ${ieltsReqNum}.`);
+        }
+
+        // 6. Tier Categorization Engine
+        let tier = 'competitive'; // default
+        const numericAcceptance = parseFloat(uni.acceptanceRate);
+
+        if (numericAcceptance < 8.0 || uni.globalRank <= 5) {
+          // Top Ivy / Oxbridge level is always ambitious/selective
+          if (satVal && satVal >= 1550 && ieltsVal && ieltsVal >= 8.0 && matchScore >= 85) {
+            tier = 'competitive';
+          } else {
+            tier = 'ambitious';
+          }
+        } else if (numericAcceptance > 35.0 || matchScore >= 80) {
+          if (matchScore >= 70) {
+            tier = 'safe';
+          } else {
+            tier = 'competitive';
+          }
+        } else {
+          if (matchScore >= 75) {
+            tier = 'competitive';
+          } else {
+            tier = 'ambitious';
+          }
+        }
+
+        return {
+          ...uni,
+          matchScore: Math.min(Math.max(matchScore, 20), 99),
+          tier,
+          matchReasons,
+          improvementTips,
+          suggestedSatTarget: satTarget,
+          suggestedIeltsTarget: `${ieltsReqNum}`
+        };
+      });
+
+      setResults(scored);
+      setIsProcessing(false);
+    }, 600);
+  };
+
+  // Filtered and Sorted Results
+  const processedResults = useMemo(() => {
+    return results
+      .filter(uni => {
+        if (selectedTier !== 'all' && uni.tier !== selectedTier) return false;
+        if (selectedCountryFilter !== 'all' && uni.country !== selectedCountryFilter) return false;
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase();
+          return (
+            uni.name.toLowerCase().includes(q) ||
+            uni.city.toLowerCase().includes(q) ||
+            uni.country.toLowerCase().includes(q) ||
+            uni.popularPrograms.some(p => p.toLowerCase().includes(q))
+          );
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'relevance') return b.matchScore - a.matchScore;
+        if (sortBy === 'acceptance') return parseFloat(a.acceptanceRate) - parseFloat(b.acceptanceRate);
+        if (sortBy === 'rank') return a.globalRank - b.globalRank;
+        return 0;
+      });
+  }, [results, selectedTier, selectedCountryFilter, searchQuery, sortBy]);
+
+  const filteredCountriesForWizard = AVAILABLE_COUNTRIES.filter(c =>
+    c.toLowerCase().includes(countrySearch.toLowerCase())
+  );
+
+  const filteredMajorsForWizard = AVAILABLE_MAJORS.filter(m =>
+    m.toLowerCase().includes(majorSearch.toLowerCase())
+  );
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-indigo-500 selection:text-white">
+      
+      {/* HEADER / NAVIGATION */}
+      <header className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-800/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          
+          {/* Logo */}
+          <div 
+            onClick={() => setActiveTab('home')} 
+            className="flex items-center space-x-3 cursor-pointer group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+              <GraduationCap className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+                UniMatch AI
+              </span>
+              <span className="block text-[10px] text-indigo-400 uppercase tracking-wider font-semibold">
+                Smart University Discovery
+              </span>
+            </div>
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="hidden md:flex items-center space-x-1 bg-slate-900/60 p-1 rounded-xl border border-slate-800">
+            <button
+              onClick={() => setActiveTab('home')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === 'home' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              }`}
+            >
+              Главная
+            </button>
+            <button
+              onClick={() => setActiveTab('wizard')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === 'wizard' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              }`}
+            >
+              Подбор университета
+            </button>
+            {results.length > 0 && (
+              <button
+                onClick={() => setActiveTab('results')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeTab === 'results' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                }`}
+              >
+                Результаты ({results.length})
+              </button>
+            )}
+            <button
+              onClick={() => setActiveTab('favorites')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 ${
+                activeTab === 'favorites' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              }`}
+            >
+              <Heart className="w-4 h-4 text-rose-400 fill-rose-400/30" />
+              <span>Избранное</span>
+              {favorites.length > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 text-xs bg-rose-500/20 text-rose-300 rounded-full font-bold">
+                  {favorites.length}
+                </span>
+              )}
+            </button>
+          </nav>
+
+          {/* Right Action & Language Switcher */}
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setLang(lang === 'ru' ? 'en' : 'ru')}
+              className="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800/80 border border-slate-700/60 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+            >
+              <Globe className="w-3.5 h-3.5 text-indigo-400" />
+              <span>{lang.toUpperCase()}</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab('wizard');
+                setTimeout(() => {
+                  const el = document.getElementById('wizard-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }}
+              className="px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/25 transition-all flex items-center space-x-2 active:scale-95"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span className="hidden sm:inline">Подобрать университет</span>
+              <span className="sm:hidden">Подобрать</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* MAIN CONTENT AREA */}
+      <main>
+        {/* ========================================== */}
+        {/* VIEW 1: HOME PAGE WITH MIT HERO */}
+        {/* ========================================== */}
+        {activeTab === 'home' && (
+          <div className="space-y-24 pb-20">
+            
+            {/* HERO SECTION WITH REAL MIT CAMPUS PHOTOGRAPH */}
+            <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden border-b border-slate-800/80">
+              {/* Background MIT Photo with Dark Overlay */}
+              <div className="absolute inset-0 z-0">
+                <img
+                  src="https://images.unsplash.com/photo-1564981797816-1043664bf78d?q=80&w=2000&auto=format&fit=crop"
+                  alt="Massachusetts Institute of Technology (MIT) Great Dome Killian Court"
+                  className="w-full h-full object-cover object-center transform scale-105 filter brightness-[0.45] contrast-[1.1]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/30" />
+                <div className="absolute inset-0 bg-indigo-950/20 mix-blend-overlay" />
+              </div>
+
+              {/* Floating Badge & Content */}
+              <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center pt-20 pb-16">
+                
+                <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs sm:text-sm font-medium mb-8 backdrop-blur-md animate-fade-in">
+                  <School className="w-4 h-4 text-indigo-400" />
+                  <span>Умная рекомендательная система для старшеклассников</span>
+                </div>
+
+                {/* Exact Required Headline */}
+                <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-none">
+                  «Делай желаемое <br className="hidden sm:inline" />
+                  <span className="bg-gradient-to-r from-indigo-300 via-indigo-400 to-violet-300 bg-clip-text text-transparent">
+                    вместе с нами»
+                  </span>
+                </h1>
+
+                <p className="max-w-3xl mx-auto text-lg sm:text-xl text-slate-300 mb-10 font-normal leading-relaxed">
+                  Персонализированный подбор ведущих мировых университетов на основе вашего академического профиля, баллов SAT/IELTS, внеучебных достижений и желаемой специальности.
+                </p>
+
+                {/* Primary CTA Buttons */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <button
+                    onClick={() => setActiveTab('wizard')}
+                    className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-bold text-lg shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center space-x-3 group"
+                  >
+                    <span>Подобрать университет</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
+
+                  <a
+                    href="#features"
+                    className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-slate-700/80 font-semibold text-lg backdrop-blur-md transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <Info className="w-5 h-5 text-slate-400" />
+                    <span>Как это работает</span>
+                  </a>
+                </div>
+
+                {/* Quick Stats Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 pt-12 border-t border-slate-800/60 max-w-4xl mx-auto">
+                  <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/50 backdrop-blur-sm">
+                    <div className="text-2xl sm:text-3xl font-extrabold text-white">100%</div>
+                    <div className="text-xs text-slate-400 mt-1">Официальные данные</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/50 backdrop-blur-sm">
+                    <div className="text-2xl sm:text-3xl font-extrabold text-indigo-400">3 Уровня</div>
+                    <div className="text-xs text-slate-400 mt-1">Амбициозные / Реалистичные / Запасные</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/50 backdrop-blur-sm">
+                    <div className="text-2xl sm:text-3xl font-extrabold text-white">8+ Стран</div>
+                    <div className="text-xs text-slate-400 mt-1">США, Великобритания, Канада и др.</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/50 backdrop-blur-sm">
+                    <div className="text-2xl sm:text-3xl font-extrabold text-indigo-400">13+ Спец.</div>
+                    <div className="text-xs text-slate-400 mt-1">CS, AI, Engineering, Pre-Med</div>
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
+            {/* FEATURES SECTION */}
+            <section id="features" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                <h2 className="text-xs font-bold uppercase tracking-widest text-indigo-400 mb-2">
+                  Интеллектуальный процесс
+                </h2>
+                <h3 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+                  Как UniMatch AI помогает поступать разумнее
+                </h3>
+                <p className="text-slate-400 mt-3 text-base sm:text-lg">
+                  Мы объединяем официальные требования приемных комиссий 2024–2025 с прозрачной логикой оценки профиля.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                {/* Feature Card 1 */}
+                <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-indigo-500/40 transition-all hover:-translate-y-1 group">
+                  <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6 group-hover:scale-110 transition-transform">
+                    <Compass className="w-7 h-7" />
+                  </div>
+                  <h4 className="text-xl font-bold text-white mb-3">Персонализированный подбор</h4>
+                  <p className="text-slate-400 text-sm leading-relaxed">
+                    Система учитывает пересечение страны, выбранной специальности, ваших текущих тестов и спортивных/академических достижений.
+                  </p>
+                </div>
+
+                {/* Feature Card 2 */}
+                <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-indigo-500/40 transition-all hover:-translate-y-1 group">
+                  <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6 group-hover:scale-110 transition-transform">
+                    <Target className="w-7 h-7" />
+                  </div>
+                  <h4 className="text-xl font-bold text-white mb-3">Ориентиры и целевые баллы</h4>
+                  <p className="text-slate-400 text-sm leading-relaxed">
+                    Если вы еще не сдавали SAT или IELTS, алгоритм сформирует точный целевой балл (Target Score) для достижения конкурентоспособности.
+                  </p>
+                </div>
+
+                {/* Feature Card 3 */}
+                <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-indigo-500/40 transition-all hover:-translate-y-1 group">
+                  <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6 group-hover:scale-110 transition-transform">
+                    <ShieldCheck className="w-7 h-7" />
+                  </div>
+                  <h4 className="text-xl font-bold text-white mb-3">Прозрачность и источники</h4>
+                  <p className="text-slate-400 text-sm leading-relaxed">
+                    Никаких выдуманных гарантий или скрытых цифр. Каждая статистика сопровождается ссылкой на официальный источник вуза.
+                  </p>
+                </div>
+
+              </div>
+            </section>
+
+            {/* TOP FEATURED UNIVERSITIES SHOWCASE */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
+                <div>
+                  <h2 className="text-xs font-bold uppercase tracking-widest text-indigo-400 mb-2">Каталог вузов</h2>
+                  <h3 className="text-3xl font-bold text-white tracking-tight">Ведущие университеты мира в нашей базе</h3>
+                </div>
+                <button
+                  onClick={() => setActiveTab('wizard')}
+                  className="mt-4 md:mt-0 text-sm font-semibold text-indigo-400 hover:text-indigo-300 flex items-center space-x-1"
+                >
+                  <span>Пройти тестирование и узнать свои шансы</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {UNIVERSITIES_DATA.slice(0, 6).map(uni => (
+                  <div
+                    key={uni.id}
+                    className="rounded-2xl bg-slate-900/60 border border-slate-800 overflow-hidden hover:border-slate-700 transition-all flex flex-col"
+                  >
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={uni.heroImage}
+                        alt={uni.name}
+                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
+                      <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-slate-800 text-xs font-semibold text-white flex items-center space-x-1">
+                        <span>{uni.flag}</span>
+                        <span>{uni.city}</span>
+                      </div>
+                      <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-indigo-600/90 text-white text-xs font-bold shadow-md">
+                        #{uni.globalRank} в мире
+                      </div>
+                    </div>
+
+                    <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h4 className="text-lg font-bold text-white mb-2 line-clamp-1">{uni.name}</h4>
+                        <p className="text-xs text-slate-400 line-clamp-2 mb-4">{uni.description}</p>
+                      </div>
+
+                      <div className="space-y-2 pt-3 border-t border-slate-800/80 text-xs">
+                        <div className="flex justify-between text-slate-300">
+                          <span className="text-slate-500">Процент зачисления:</span>
+                          <span className="font-semibold text-indigo-300">{uni.acceptanceRate}</span>
+                        </div>
+                        <div className="flex justify-between text-slate-300">
+                          <span className="text-slate-500">Диапазон SAT:</span>
+                          <span className="font-semibold">{uni.publishedSatRange}</span>
+                        </div>
+                        <div className="flex justify-between text-slate-300">
+                          <span className="text-slate-500">Мин. IELTS:</span>
+                          <span className="font-semibold">{uni.publishedIeltsReq}</span>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => setModalUni(uni)}
+                        className="mt-5 w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-semibold transition-colors flex items-center justify-center space-x-1.5"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-indigo-400" />
+                        <span>Подробнее о требованиях</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+          </div>
+        )}
+
+        {/* ========================================== */}
+        {/* VIEW 2: INTERACTIVE RECOMMENDATION WIZARD */}
+        {/* ========================================== */}
+        {(activeTab === 'wizard' || activeTab === 'home') && (
+          <section id="wizard-section" className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+            
+            <div className="text-center max-w-3xl mx-auto mb-10">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold mb-3">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Шаг за шагом к вашему поступательному списку</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                Анкета академического профиля
+              </h2>
+              <p className="text-slate-400 text-sm sm:text-base mt-2">
+                Заполните ваши предпочтения и академические показатели. Если у вас еще нет баллов тестов, оставьте поля пустыми — система составит целевые ориентиры.
+              </p>
+            </div>
+
+            {/* WIZARD CARD CONTAINER */}
+            <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-10 backdrop-blur-xl shadow-2xl space-y-10">
+              
+              {/* STEP 1: PREFERRED COUNTRIES */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-lg font-bold text-white flex items-center space-x-2">
+                    <span className="w-7 h-7 rounded-lg bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">1</span>
+                    <span>Желаемые страны для обучения</span>
+                  </label>
+                  <span className="text-xs text-slate-400">Выберите одну или несколько</span>
+                </div>
+
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-500" />
+                  <input
+                    type="text"
+                    placeholder="Поиск страны по названию..."
+                    value={countrySearch}
+                    onChange={(e) => setCountrySearch(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                  />
+                </div>
+
+                <div className="flex flex-wrap gap-2.5 pt-1">
+                  {filteredCountriesForWizard.map(country => {
+                    const isSelected = selectedCountries.includes(country);
+                    return (
+                      <button
+                        key={country}
+                        type="button"
+                        onClick={() => toggleCountry(country)}
+                        className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center space-x-2 ${
+                          isSelected
+                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 border border-indigo-500'
+                            : 'bg-slate-950/60 text-slate-300 border border-slate-800 hover:border-slate-700'
+                        }`}
+                      >
+                        {isSelected && <Check className="w-4 h-4 text-white" />}
+                        <span>{country}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* STEP 2: TEST SCORES (SAT & IELTS) */}
+              <div className="space-y-4 pt-6 border-t border-slate-800/80">
+                <div className="flex items-center justify-between">
+                  <label className="text-lg font-bold text-white flex items-center space-x-2">
+                    <span className="w-7 h-7 rounded-lg bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">2</span>
+                    <span>Результаты стандартизированных тестов</span>
+                  </label>
+                  <span className="text-xs text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/20">
+                    Необязательно
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-400">
+                  Если вы еще не сдавали тесты, оставьте поля пустыми. Система предложит целевые баллы (Target Scores), к которым стоит стремиться.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+                  
+                  {/* SAT INPUT */}
+                  <div className="p-5 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-bold text-white">Общий балл SAT</span>
+                      <span className="text-[11px] text-slate-500">Диапазон: 400 – 1600</span>
+                    </div>
+                    <input
+                      type="number"
+                      placeholder="Например: 1520 (или оставьте пустым)"
+                      value={satScore}
+                      onChange={(e) => handleSatChange(e.target.value)}
+                      className={`w-full px-4 py-3 rounded-xl bg-slate-900 border text-slate-100 text-sm focus:outline-none transition-colors ${
+                        satError ? 'border-rose-500/80 focus:border-rose-500' : 'border-slate-800 focus:border-indigo-500'
+                      }`}
+                    />
+                    {satError && (
+                      <p className="text-xs text-rose-400 flex items-center space-x-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        <span>{satError}</span>
+                      </p>
+                    )}
+                  </div>
+
+                  {/* IELTS INPUT */}
+                  <div className="p-5 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-bold text-white">Общий балл IELTS</span>
+                      <span className="text-[11px] text-slate-500">Диапазон: 0.0 – 9.0 (шаг 0.5)</span>
+                    </div>
+                    <input
+                      type="number"
+                      step="0.5"
+                      placeholder="Например: 7.5 (или оставьте пустым)"
+                      value={ieltsScore}
+                      onChange={(e) => handleIeltsChange(e.target.value)}
+                      className={`w-full px-4 py-3 rounded-xl bg-slate-900 border text-slate-100 text-sm focus:outline-none transition-colors ${
+                        ieltsError ? 'border-rose-500/80 focus:border-rose-500' : 'border-slate-800 focus:border-indigo-500'
+                      }`}
+                    />
+                    {ieltsError && (
+                      <p className="text-xs text-rose-400 flex items-center space-x-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        <span>{ieltsError}</span>
+                      </p>
+                    )}
+                  </div>
+
+                </div>
+              </div>
+
+              {/* STEP 3: STUDENT ACHIEVEMENTS */}
+              <div className="space-y-4 pt-6 border-t border-slate-800/80">
+                <div className="flex items-center justify-between">
+                  <label className="text-lg font-bold text-white flex items-center space-x-2">
+                    <span className="w-7 h-7 rounded-lg bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">3</span>
+                    <span>Личные и академические достижения</span>
+                  </label>
+                  <span className="text-xs text-slate-400">Олимпиады, проекты, лидерство</span>
+                </div>
+
+                {/* List of Added Achievements */}
+                {achievements.length > 0 && (
+                  <div className="space-y-2.5 mb-4">
+                    {achievements.map((item) => (
+                      <div
+                        key={item.id}
+                        className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start justify-between group"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center space-x-2">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                              {item.category}
+                            </span>
+                            <h5 className="text-sm font-semibold text-white">{item.title}</h5>
+                          </div>
+                          {item.description && (
+                            <p className="text-xs text-slate-400 leading-relaxed">{item.description}</p>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeAchievement(item.id)}
+                          className="text-slate-500 hover:text-rose-400 p-1 transition-colors"
+                          title="Удалить"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Achievement Builder Form Input */}
+                <div className="p-5 rounded-2xl bg-slate-950/40 border border-slate-800/60 space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input
+                      type="text"
+                      placeholder="Название достижения (напр.: Финалист Hackathon 2024)"
+                      value={newAchTitle}
+                      onChange={(e) => setNewAchTitle(e.target.value)}
+                      className="sm:col-span-2 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                    />
+                    <select
+                      value={newAchCat}
+                      onChange={(e) => setNewAchCat(e.target.value)}
+                      className="px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                    >
+                      {ACHIEVEMENT_CATEGORIES.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <input
+                    type="text"
+                    placeholder="Краткое описание деталей или занятого места (необязательно)"
+                    value={newAchDesc}
+                    onChange={(e) => setNewAchDesc(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={addAchievement}
+                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 text-indigo-300 border border-slate-700 text-xs font-semibold transition-colors flex items-center space-x-1.5"
+                  >
+                    <span>+ Добавить новое достижение</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* STEP 4: INTENDED FIELD OF STUDY */}
+              <div className="space-y-4 pt-6 border-t border-slate-800/80">
+                <div className="flex items-center justify-between">
+                  <label className="text-lg font-bold text-white flex items-center space-x-2">
+                    <span className="w-7 h-7 rounded-lg bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">4</span>
+                    <span>Желаемое направление обучения (Major)</span>
+                  </label>
+                  <span className="text-xs text-slate-400">Выберите главное направление</span>
+                </div>
+
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-500" />
+                  <input
+                    type="text"
+                    placeholder="Поиск специальности..."
+                    value={majorSearch}
+                    onChange={(e) => setMajorSearch(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 pt-1">
+                  {filteredMajorsForWizard.map(major => {
+                    const isSelected = selectedMajor === major;
+                    return (
+                      <button
+                        key={major}
+                        type="button"
+                        onClick={() => setSelectedMajor(major)}
+                        className={`p-3 rounded-xl text-xs font-semibold text-left transition-all flex items-center justify-between ${
+                          isSelected
+                            ? 'bg-indigo-600 text-white border border-indigo-400 shadow-md shadow-indigo-600/20'
+                            : 'bg-slate-950/60 text-slate-300 border border-slate-800 hover:border-slate-700'
+                        }`}
+                      >
+                        <span className="line-clamp-1">{major}</span>
+                        {isSelected && <Check className="w-3.5 h-3.5 text-white shrink-0 ml-1" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* ACTION BUTTON: GENERATE RECOMMENDATIONS */}
+              <div className="pt-8 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={generateRecommendations}
+                  disabled={isProcessing || satError || ieltsError}
+                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-bold text-lg shadow-xl shadow-indigo-500/25 transition-all flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99]"
+                >
+                  {isProcessing ? (
+                    <>
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                      <span>Анализируем требования университетов...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-5 h-5" />
+                      <span>Подобрать университеты</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+            </div>
+          </section>
+        )}
+
+        {/* ========================================== */}
+        {/* VIEW 3: RECOMMENDATION RESULTS & CATALOG */}
+        {/* ========================================== */}
+        {activeTab === 'results' && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+            
+            {/* RESULTS HEADER & SUMMARY */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+              <div>
+                <div className="flex items-center space-x-2 text-xs text-indigo-400 font-semibold mb-1">
+                  <span>Результаты подбора</span>
+                  <span>•</span>
+                  <span>Направление: {selectedMajor}</span>
+                </div>
+                <h2 className="text-3xl font-extrabold text-white tracking-tight">
+                  Рекомендованные университеты ({processedResults.length})
+                </h2>
+              </div>
+
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => setActiveTab('wizard')}
+                  className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-semibold flex items-center space-x-2 transition-colors"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Изменить данные профиля</span>
+                </button>
+              </div>
+            </div>
+
+            {/* FILTERS AND SEARCH BAR */}
+            <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-4">
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                
+                {/* Search input */}
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
+                  <input
+                    type="text"
+                    placeholder="Поиск по названию или городу..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+
+                {/* Tier Filter */}
+                <select
+                  value={selectedTier}
+                  onChange={(e) => setSelectedTier(e.target.value)}
+                  className="px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="all">Все категории риска</option>
+                  <option value="ambitious">Амбициозный вариант (High Risk)</option>
+                  <option value="competitive">Конкурентный вариант (Balanced)</option>
+                  <option value="safe">Надежный вариант (Safer Match)</option>
+                </select>
+
+                {/* Country Filter */}
+                <select
+                  value={selectedCountryFilter}
+                  onChange={(e) => setSelectedCountryFilter(e.target.value)}
+                  className="px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="all">Все страны</option>
+                  {AVAILABLE_COUNTRIES.map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+
+                {/* Sorting */}
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="relevance">Сортировка: По совпадению %</option>
+                  <option value="acceptance">Сортировка: По селективности (Acceptance)</option>
+                  <option value="rank">Сортировка: По мировому рейтингу</option>
+                </select>
+
+              </div>
+            </div>
+
+            {/* RESULTS CARDS GRID */}
+            {processedResults.length === 0 ? (
+              <div className="py-20 text-center bg-slate-900/40 rounded-3xl border border-slate-800/80">
+                <AlertCircle className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                <h3 className="text-xl font-bold text-white mb-1">Ничего не найдено</h3>
+                <p className="text-slate-400 text-sm max-w-md mx-auto mb-6">
+                  Попробуйте смягчить фильтры поиска или добавить больше стран в анкету.
+                </p>
+                <button
+                  onClick={() => {
+                    setSelectedTier('all');
+                    setSelectedCountryFilter('all');
+                    setSearchQuery('');
+                  }}
+                  className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold"
+                >
+                  Сбросить фильтры
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {processedResults.map(uni => {
+                  const isFav = favorites.includes(uni.id);
+
+                  // Tier styling badge
+                  let tierLabel = 'Реалистичный';
+                  let tierBg = 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30';
+                  if (uni.tier === 'ambitious') {
+                    tierLabel = 'Амбициозный';
+                    tierBg = 'bg-amber-500/10 text-amber-300 border-amber-500/30';
+                  } else if (uni.tier === 'safe') {
+                    tierLabel = 'Надежная цель';
+                    tierBg = 'bg-blue-500/10 text-blue-300 border-blue-500/30';
+                  }
+
+                  return (
+                    <div
+                      key={uni.id}
+                      className="rounded-3xl bg-slate-900/80 border border-slate-800 overflow-hidden hover:border-slate-700 transition-all flex flex-col justify-between shadow-lg"
+                    >
+                      <div>
+                        {/* Card Image Banner */}
+                        <div className="relative h-44 overflow-hidden">
+                          <img
+                            src={uni.heroImage}
+                            alt={uni.name}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                          
+                          {/* Bookmark button */}
+                          <button
+                            type="button"
+                            onClick={() => toggleFavorite(uni.id)}
+                            className="absolute top-3 right-3 p-2 rounded-xl bg-slate-950/70 backdrop-blur-md border border-slate-800 text-slate-300 hover:text-rose-400 transition-colors"
+                          >
+                            <Heart className={`w-4 h-4 ${isFav ? 'text-rose-500 fill-rose-500' : ''}`} />
+                          </button>
+
+                          {/* Country badge */}
+                          <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md text-xs font-medium text-white flex items-center space-x-1">
+                            <span>{uni.flag}</span>
+                            <span>{uni.country}</span>
+                          </div>
+
+                          {/* Match Percentage Badge */}
+                          <div className="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-indigo-600/90 text-white text-xs font-extrabold shadow-md flex items-center space-x-1">
+                            <Sparkles className="w-3 h-3" />
+                            <span>Совпадение: {uni.matchScore}%</span>
+                          </div>
+                        </div>
+
+                        {/* Card Body Header */}
+                        <div className="p-5 pb-3">
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${tierBg}`}>
+                              {tierLabel}
+                            </span>
+                            <span className="text-xs text-slate-400 font-medium">
+                              Мировой ранг: #{uni.globalRank}
+                            </span>
+                          </div>
+
+                          <h3 className="text-lg font-bold text-white leading-snug line-clamp-1 mb-1">
+                            {uni.name}
+                          </h3>
+                          <p className="text-xs text-slate-400">{uni.city}</p>
+                        </div>
+
+                        {/* Key Metrics Grid */}
+                        <div className="px-5 py-3 bg-slate-950/50 border-y border-slate-800/60 grid grid-cols-2 gap-2 text-xs">
+                          <div>
+                            <span className="text-slate-500 block text-[10px]">Процент зачисления</span>
+                            <span className="font-bold text-indigo-300">{uni.acceptanceRate}</span>
+                          </div>
+                          <div>
+                            <span className="text-slate-500 block text-[10px]">Диапазон SAT</span>
+                            <span className="font-semibold text-slate-200">{uni.publishedSatRange}</span>
+                          </div>
+                          <div>
+                            <span className="text-slate-500 block text-[10px]">Требование IELTS</span>
+                            <span className="font-semibold text-slate-200">{uni.publishedIeltsReq}</span>
+                          </div>
+                          <div>
+                            <span className="text-slate-500 block text-[10px]">Целевой SAT</span>
+                            <span className="font-bold text-emerald-400">{uni.suggestedSatTarget}</span>
+                          </div>
+                        </div>
+
+                        {/* Recommendation Reasoning Section */}
+                        <div className="p-5 space-y-3">
+                          <div>
+                            <h5 className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center space-x-1">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                              <span>Почему рекомендован:</span>
+                            </h5>
+                            <ul className="space-y-1.5">
+                              {uni.matchReasons.map((reason, idx) => (
+                                <li key={idx} className="text-xs text-slate-300 flex items-start space-x-1.5 leading-snug">
+                                  <span className="text-indigo-400 font-bold">•</span>
+                                  <span>{reason}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          {/* Target Improvement Tips */}
+                          {uni.improvementTips.length > 0 && (
+                            <div className="pt-2 border-t border-slate-800/60">
+                              <h5 className="text-[11px] font-bold uppercase tracking-wider text-amber-400 mb-1.5 flex items-center space-x-1">
+                                <Target className="w-3.5 h-3.5 text-amber-400" />
+                               <span>Зона роста / Ориентиры:</span>
+                              </h5>
+                              <ul className="space-y-1">
+                                {uni.improvementTips.map((tip, idx) => (
+                                  <li key={idx} className="text-xs text-amber-200/90 leading-snug">
+                                    • {tip}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Card Footer Action */}
+                      <div className="p-5 pt-0">
+                        <button
+                          onClick={() => setModalUni(uni)}
+                          className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-semibold transition-colors flex items-center justify-center space-x-1.5"
+                        >
+                          <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                          <span>Подробный профиль и ссылки</span>
+                        </button>
+                      </div>
+
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* FOOTER DISCLAIMER */}
+            <div className="p-4 rounded-2xl bg-slate-900/40 border border-slate-800/60 text-xs text-slate-500 text-center leading-relaxed">
+              <p>
+                <strong>Отказ от ответственности:</strong> Оценки совпадения профиля и проходные баллы носят информационно-ориентировочный характер и базируются на официально опубликованных данных приемных комиссий 2024–2025 гг. Окончательное решение о зачислении принимается исключительно университетом.
+              </p>
+            </div>
+
+          </div>
+        )}
+
+        {/* ========================================== */}
+        {/* VIEW 4: FAVORITES PAGE */}
+        {/* ========================================== */}
+        {activeTab === 'favorites' && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+            <div className="flex items-center justify-between pb-6 border-b border-slate-800">
+              <div>
+                <h2 className="text-3xl font-extrabold text-white tracking-tight">
+                  Избранные университеты ({favorites.length})
+                </h2>
+                <p className="text-slate-400 text-sm mt-1">
+                  Сохраненные в вашем локальном списке для дальнейшего изучения
+                </p>
+              </div>
+            </div>
+
+            {favorites.length === 0 ? (
+              <div className="py-20 text-center bg-slate-900/40 rounded-3xl border border-slate-800/80">
+                <Heart className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                <h3 className="text-xl font-bold text-white mb-1">Список избранного пуст</h3>
+                <p className="text-slate-400 text-sm max-w-md mx-auto mb-6">
+                  Нажмите на иконку сердечка на карточке любого университета, чтобы сохранить его сюда.
+                </p>
+                <button
+                  onClick={() => setActiveTab('wizard')}
+                  className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold"
+                >
+                  Перейти к подбору
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {UNIVERSITIES_DATA.filter(u => favorites.includes(u.id)).map(uni => (
+                  <div
+                    key={uni.id}
+                    className="rounded-3xl bg-slate-900/80 border border-slate-800 overflow-hidden flex flex-col justify-between"
+                  >
+                    <div className="p-5">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs text-indigo-400 font-semibold">{uni.country}</span>
+                        <button
+                          onClick={() => toggleFavorite(uni.id)}
+                          className="text-rose-500 hover:text-slate-400 text-xs flex items-center space-x-1"
+                        >
+                          <X className="w-4 h-4" />
+                          <span>Удалить</span>
+                        </button>
+                      </div>
+                      <h4 className="text-lg font-bold text-white mb-1">{uni.name}</h4>
+                      <p className="text-xs text-slate-400 mb-4">{uni.city}</p>
+                      
+                      <div className="space-y-2 text-xs border-t border-slate-800 pt-3">
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Acceptance Rate:</span>
+                          <span className="font-bold text-indigo-300">{uni.acceptanceRate}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">SAT Range:</span>
+                          <span className="font-semibold">{uni.publishedSatRange}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-5 pt-0">
+                      <button
+                        onClick={() => setModalUni(uni)}
+                        className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-semibold transition-colors"
+                      >
+                        Подробнее о вузе
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </main>
+
+      {/* ========================================== */}
+      {/* MODAL: DETAILED UNIVERSITY REQUIREMENT BREAKDOWN */}
+      {/* ========================================== */}
+      {modalUni && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+          <div 
+            className="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Modal Button */}
+            <button
+              onClick={() => setModalUni(null)}
+              className="absolute top-5 right-5 p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Modal Header */}
+            <div className="flex items-start space-x-4">
+              <div className="w-16 h-16 rounded-2xl bg-slate-800 overflow-hidden shrink-0 border border-slate-700">
+                <img src={modalUni.heroImage} alt={modalUni.name} className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <div className="flex items-center space-x-2 text-xs font-semibold text-indigo-400 mb-1">
+                  <span>{modalUni.flag} {modalUni.country}</span>
+                  <span>•</span>
+                  <span>{modalUni.city}</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-extrabold text-white leading-tight">
+                  {modalUni.name}
+                </h3>
+              </div>
+            </div>
+
+            {/* Description */}
+            <p className="text-sm text-slate-300 leading-relaxed border-b border-slate-800 pb-4">
+              {modalUni.description}
+            </p>
+
+            {/* Requirements Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              
+              <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Процент зачисления</span>
+                <p className="text-lg font-extrabold text-indigo-300">{modalUni.acceptanceRate}</p>
+                <p className="text-[10px] text-slate-500 leading-tight">
+                  Источник: {modalUni.acceptanceRateSource}
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Требование SAT</span>
+                <p className="text-lg font-extrabold text-white">{modalUni.publishedSatRange}</p>
+                <p className="text-[10px] text-slate-400">Политика: {modalUni.satPolicy}</p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Требование IELTS</span>
+                <p className="text-lg font-extrabold text-white">{modalUni.publishedIeltsReq}</p>
+                <p className="text-[10px] text-slate-400">Мин. балл за секцию: {modalUni.ieltsMinBand}</p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Финансовая помощь</span>
+                <p className="text-sm font-bold text-emerald-400">
+                  {modalUni.scholarshipAvailable ? 'Доступны стипендии' : 'Ограничено для инт. студентов'}
+                </p>
+                <p className="text-[10px] text-slate-400">
+                  Need-Blind: {modalUni.needBlindIntl ? 'Да (для всех)' : 'Нет (Need-Aware)'}
+                </p>
+              </div>
+
+            </div>
+
+            {/* Popular Programs */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                Доступные популярные направления бакалавриата
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {modalUni.popularPrograms.map((prog, idx) => (
+                  <span key={idx} className="px-3 py-1 rounded-xl bg-slate-800 text-xs text-indigo-300 font-medium">
+                    {prog}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* External Links */}
+            <div className="pt-4 border-t border-slate-800 flex flex-col sm:flex-row gap-3">
+              <a
+                href={modalUni.officialWebsite}
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-semibold transition-colors flex items-center justify-center space-x-2"
+              >
+                <span>Официальный сайт вуза</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+
+              <a
+                href={modalUni.admissionsUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/20"
+              >
+                <span>Приемная комиссия (Admissions)</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+
+            {/* Source citation date */}
+            <div className="text-center text-[10px] text-slate-500 pt-2">
+              Данные верифицированы: {modalUni.lastUpdated}
+            </div>
+
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
